@@ -1,13 +1,12 @@
-# IDE
-.idea/
-.vscode/
-
-# Virtual environments
+.venv/
 venv/
 env/
-.env/
+*.egg-info/
 
-# Python
+.env
+.env.local
+.env.*.local
+
 __pycache__/
 *.py[cod]
 *$py.class
@@ -25,20 +24,36 @@ parts/
 sdist/
 var/
 wheels/
-*.egg-info/
-.installed.cfg
 *.egg
+*.manifest
+*.spec
 
-# Database
 *.sqlite3
 db.sqlite3
 
-# Logs
 *.log
+.coverage
+coverage.xml
+.tox/
+.nox/
+htmlcov/
+.pytest_cache/
+.hypothesis/
 
-# OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-*.pyc
-media/
+.git/
+
+fixtures.json
+fixtures/*.json
+test_data/
+
+.ipython/profile_default/history.sqlite
+.local/share/jupyter/
