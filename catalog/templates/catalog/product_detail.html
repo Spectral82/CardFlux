@@ -1,0 +1,31 @@
+
+{% extends "catalog/base.html" %}
+
+{% block title %}{{ product.name }} — CardFlux{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <h2 class="my-0 mr-md-auto">{{ product.name }}</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+        {% else %}
+        <div class="bg-light d-flex align-items-center justify-content-center" style="min-height:400px;">
+            <span class="text-muted">Нет фото</span>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h3>{{ product.name }}</h3>
+        <p class="fs-5 fw-bold">{{ product.price }} ₽</p>
+        <hr>
+        <h5>Описание</h5>
+        <p>{{ product.description }}</p>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">Вернуться в каталог</a>
+    </div>
+</div>
+{% endblock %}
+

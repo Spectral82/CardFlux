@@ -25,41 +25,47 @@ HTML5/CSS3 — базовая вёрстка
 1. Создание окружения
 Для Windows:
 
-bash
 python -m venv venv
 venv\Scripts\activate
 Для macOS/Linux:
 
-bash
 python3 -m venv venv
 source venv/bin/activate
 
 2. Установка зависимостей
-bash
+
 pip install -r requirements.txt
 
 3. Запуск проекта
-bash
+
 python manage.py migrate
 python manage.py runserver
 
 4. Доступ к проекту
+
 Откройте в браузере: 
 
-Структура проекта
-text
+Структура проекта:
+
 CardFlux/
-├── CardFlux/          # Настройки проекта
+├── CardFlux/ 
+|   |__ _init_.py
+|   |__ asgi.py
 │   ├── settings.py
 │   ├── urls.py
-│   └── ...
-├── catalog/           # Основное приложение
+│   └── wsgi.py
+├── catalog/  
+|   |__ _init_.py
+|   |__ admin.py
+|   |__ apps.py
+|   |__ forms.py
+|   |__ models.py
+|   |__ tests.py
 │   ├── views.py
 │   ├── urls.py
 │   └── templates/
-├── templates/         # Общие шаблоны
-├── static/            # Статические файлы
-├── .gitignore
+|   |__ migrations
+├── media/         
 ├── requirements.txt
 └── README.md
 
