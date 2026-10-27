@@ -1,14 +1,37 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Product
+from django.contrib import messages
+
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, "catalog/product_list.html", {"products": products})
+
 
 def home(request):
-    return render(request, 'catalog/home.html')
+    products = Product.objects.order_by("-created_at")[:5]
+    return render(request, "catalog/home.html", {"products": products})
+
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, "catalog/product_detail.html", {"product": product})
+
 
 def contacts(request):
-    message = None
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        message_text = request.POST.get('message')
+    """Страница контактов и обработка формы обратной связи."""
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        message_text = request.POST.get("message", "").strip()  # переименовал, чтобы не путать с messages
 
-        message = "Спасибо, ваше сообщение отправлено!"
-    return render(request, 'catalog/contacts.html', context={'message': message})
+        if not name or not phone or not message_text:
+            messages.error(request, "Все поля обязательны для заполнения.")
+            return render(request, "catalog/contacts.html")
+
+        # Сейчас просто показываем успех.
+        # Чтобы реально сохранять — нужна модель ContactInfo + миграция.
+        messages.success(request, "Спасибо! Ваше сообщение принято.")
+        return render(request, "catalog/contacts.html")
+
+    return render(request, "catalog/contacts.html")
