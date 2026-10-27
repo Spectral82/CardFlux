@@ -13,11 +13,6 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
 
 class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название")
@@ -42,13 +37,3 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} ({self.category.name})"
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.name)
-            slug = base_slug
-            counter = 1
-            while Product.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = slug
-        super().save(*args, **kwargs)

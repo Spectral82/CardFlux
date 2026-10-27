@@ -23,14 +23,12 @@ def contacts(request):
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
         phone = request.POST.get("phone", "").strip()
-        message_text = request.POST.get("message", "").strip()  # переименовал, чтобы не путать с messages
+        message_text = request.POST.get("message", "").strip()
 
         if not name or not phone or not message_text:
             messages.error(request, "Все поля обязательны для заполнения.")
             return render(request, "catalog/contacts.html")
 
-        # Сейчас просто показываем успех.
-        # Чтобы реально сохранять — нужна модель ContactInfo + миграция.
         messages.success(request, "Спасибо! Ваше сообщение принято.")
         return render(request, "catalog/contacts.html")
 
