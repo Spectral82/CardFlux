@@ -1,37 +1,38 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Product
 from django.contrib import messages
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, View
+
+from .models import Product, ContactMessage
 
 
-def product_list(request):
-    products = Product.objects.all()
-    return render(request, "catalog/product_list.html", {"products": products})
+class HomeView(ListView):
+    model = Product
+    template_name = "catalog/home.html"
+    context_object_name = "products"
 
 
-def home(request):
-    products = Product.objects.order_by("-created_at")[:5]
-    return render(request, "catalog/home.html", {"products": products})
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "catalog/product_detail.html"
+    context_object_name = "product"
 
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, "catalog/product_detail.html", {"product": product})
+class ContactsView(View):
+    template_name = "catalog/contacts.html"
 
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
-def contacts(request):
-    """Страница контактов и обработка формы обратной связи."""
-    if request.method == "POST":
+    def post(self, request, *args, **kwargs):
         name = request.POST.get("name", "").strip()
         phone = request.POST.get("phone", "").strip()
-        message_text = request.POST.get("message", "").strip()  # переименовал, чтобы не путать с messages
+        message = request.POST.get("message", "").strip()
 
-        if not name or not phone or not message_text:
+        if not name or not phone or not message:
             messages.error(request, "Все поля обязательны для заполнения.")
-            return render(request, "catalog/contacts.html")
+            return render(request, self.template_name)
 
-        # Сейчас просто показываем успех.
-        # Чтобы реально сохранять — нужна модель ContactInfo + миграция.
+        ContactMessage.objects.create(name=name, phone=phone, message=message)
         messages.success(request, "Спасибо! Ваше сообщение принято.")
-        return render(request, "catalog/contacts.html")
-
-    return render(request, "catalog/contacts.html")
+        return render(request, self.template_name)
