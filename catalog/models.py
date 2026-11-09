@@ -18,6 +18,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название')
     slug = models.SlugField(max_length=200, unique=True, verbose_name='URL')
     description = models.TextField(blank=True, verbose_name='Описание')
+    image = models.ImageField(upload_to='catalog/', blank=True, null=True, verbose_name='Фото')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     stock = models.PositiveIntegerField(default=0, verbose_name='Остаток')
     is_active = models.BooleanField(default=True, verbose_name='Доступен')
