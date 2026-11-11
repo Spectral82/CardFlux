@@ -30,11 +30,10 @@ def validate_forbidden_words(value: str, field_label: str) -> None:
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "description", "image", "price", "is_active"]
+        fields = ["name", "description", "image", "price", "is_active", "is_published"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
 
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.CheckboxInput):

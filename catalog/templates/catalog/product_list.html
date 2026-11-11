@@ -25,11 +25,18 @@
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text text-truncate">{{ product.description|truncatechars:120 }}</p>
                     <p class="fw-bold">{{ product.price }} ₽</p>
+                    {% if not product.is_published %}
+                    <p><span class="badge bg-warning text-dark">Не опубликован</span></p>
+                    {% endif %}
 
                     <div class="d-flex gap-2 mt-2">
                         <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-primary btn-sm">Подробнее</a>
+                        {% if product.owner == user %}
                         <a href="{% url 'product_update' pk=product.pk %}" class="btn btn-outline-warning btn-sm">Редактировать</a>
+                        {% endif %}
+                        {% if product.owner == user or perms.catalog.delete_product %}
                         <a href="{% url 'product_delete' pk=product.pk %}" class="btn btn-outline-danger btn-sm">Удалить</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

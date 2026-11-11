@@ -41,6 +41,11 @@
         <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Доступен</label>
     </div>
 
+    <div class="form-check mb-3">
+        {{ form.is_published }}
+        <label class="form-check-label" for="{{ form.is_published.id_for_label }}">Опубликовано</label>
+    </div>
+
     <button type="submit" class="btn btn-primary">Сохранить</button>
     <a href="{% url 'product_list' %}" class="btn btn-secondary">Отмена</a>
 </form>
