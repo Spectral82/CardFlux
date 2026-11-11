@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -23,9 +24,25 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0, verbose_name='Остаток')
     is_active = models.BooleanField(default=True, verbose_name='Доступен')
 
+    # Задание 1: статус публикации. По умолчанию товар НЕ опубликован.
+    is_published = models.BooleanField("Опубликовано", default=False)
+
+    # Задание 2: владелец продукта.
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+        verbose_name="Владелец",
+    )
+
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
+        permissions = [
+            ("can_unpublish_product", "Может отменять публикацию продукта"),
+        ]
 
     def __str__(self):
         return self.name

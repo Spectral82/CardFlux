@@ -5,6 +5,9 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
     <h2 class="my-0 mr-md-auto">{{ product.name }}</h2>
+    {% if not product.is_published %}
+    <span class="badge bg-warning text-dark">Не опубликован</span>
+    {% endif %}
 </div>
 
 <div class="row">
@@ -24,9 +27,19 @@
         <h5>Описание</h5>
         <p>{{ product.description }}</p>
 
-        <div class="d-flex gap-2 mt-3">
+        <div class="d-flex gap-2 mt-3 align-items-center">
+            {% if product.owner == user %}
             <a href="{% url 'product_update' pk=product.pk %}" class="btn btn-warning">Редактировать</a>
+            {% endif %}
+            {% if product.owner == user or perms.catalog.delete_product %}
             <a href="{% url 'product_delete' pk=product.pk %}" class="btn btn-outline-danger">Удалить</a>
+            {% endif %}
+            {% if perms.catalog.can_unpublish_product and product.is_published %}
+            <form method="post" action="{% url 'product_unpublish' pk=product.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary">Снять с публикации</button>
+            </form>
+            {% endif %}
             <a href="{% url 'home' %}" class="btn btn-outline-secondary">Вернуться в каталог</a>
         </div>
     </div>
