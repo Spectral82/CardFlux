@@ -1,7 +1,8 @@
-
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -41,13 +42,13 @@ class ContactsView(View):
         return render(request, self.template_name)
 
 
-
 class ProductListView(ListView):
     model = Product
     template_name = "catalog/product_list.html"
     context_object_name = "products"
 
 
+@method_decorator(login_required, name="dispatch")
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
@@ -55,6 +56,7 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy("home")
 
 
+@method_decorator(login_required, name="dispatch")
 class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
@@ -64,6 +66,7 @@ class ProductUpdateView(UpdateView):
         return reverse_lazy("product_detail", kwargs={"pk": self.object.pk})
 
 
+@method_decorator(login_required, name="dispatch")
 class ProductDeleteView(DeleteView):
     model = Product
     template_name = "catalog/product_confirm_delete.html"
