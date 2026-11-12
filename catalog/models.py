@@ -24,10 +24,8 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0, verbose_name='Остаток')
     is_active = models.BooleanField(default=True, verbose_name='Доступен')
 
-    # Задание 1: статус публикации. По умолчанию товар НЕ опубликован.
     is_published = models.BooleanField("Опубликовано", default=False)
 
-    # Задание 2: владелец продукта.
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -60,3 +58,20 @@ class ContactMessage(models.Model):
     class Meta:
         verbose_name = "Сообщение из формы"
         verbose_name_plural = "Сообщения из формы"
+
+
+class ContactData(models.Model):
+    """Контактные данные компании, заполняются через админку."""
+    name = models.CharField("Название/ФИО", max_length=150)
+    phone = models.CharField("Телефон", max_length=50)
+    email = models.EmailField("Email", blank=True)
+    address = models.CharField("Адрес", max_length=255, blank=True)
+    working_hours = models.CharField("Часы работы", max_length=100, blank=True)
+    is_active = models.BooleanField("Активна", default=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Контактные данные"
+        verbose_name_plural = "Контактные данные"
