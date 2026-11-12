@@ -2,14 +2,15 @@ import logging
 
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
 from CardFlux import settings
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ProfileForm
 from .models import User
 
 logger = logging.getLogger(__name__)
@@ -74,6 +75,16 @@ class UserLogoutView(LogoutView):
     next_page = reverse_lazy("home")
 
 
-from django.shortcuts import render
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = ProfileForm
+    template_name = "users/profile.html"
+    success_url = reverse_lazy("profile")
 
-# Create your views here.
+    def get_object(self, queryset=None):
+        # Профиль редактируем только свой
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, "Профиль обновлён.")
+        return super().form_valid(form)

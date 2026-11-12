@@ -5,25 +5,38 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+from CardFlux import settings as project_settings
 from .forms import ProductForm
-from .models import Product, ContactMessage
+from .models import Category, Product, ContactMessage, ContactData
+from .services import get_products_by_category
 
 
 class HomeView(ListView):
     model = Product
     template_name = "catalog/home.html"
     context_object_name = "products"
+    paginate_by = 6
 
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated and user.has_perm("catalog.can_unpublish_product"):
-            return Product.objects.all()
-        return Product.objects.filter(is_published=True)
+            return Product.objects.all().order_by("-pk")
+        return Product.objects.filter(is_published=True).order_by("-pk")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        last_five = list(Product.objects.order_by("-pk")[:5])
+        print("Последние 5 созданных продуктов:")
+        for product in last_five:
+            print(f"  - {product.pk}: {product.name} ({product.price} ₽)")
+        return context
 
 
+@method_decorator(cache_page(project_settings.CACHE_TTL), name="dispatch")
 class ProductDetailView(DetailView):
     model = Product
     template_name = "catalog/product_detail.html"
@@ -34,7 +47,8 @@ class ContactsView(View):
     template_name = "catalog/contacts.html"
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        contact = ContactData.objects.filter(is_active=True).first()
+        return render(request, self.template_name, {"contact": contact})
 
     def post(self, request, *args, **kwargs):
         name = request.POST.get("name", "").strip()
@@ -125,3 +139,24 @@ class ProductUnpublishView(View):
         product.save(update_fields=["is_published"])
         messages.success(request, f"Публикация товара «{product.name}» отменена.")
         return redirect("product_detail", pk=product.pk)
+
+
+class ProductsByCategoryView(View):
+    """Список всех продуктов в категории. Принимает ID или slug категории."""
+
+    template_name = "catalog/category_products.html"
+
+    def get(self, request, *args, **kwargs):
+        category_id = kwargs.get("pk")
+        category_slug = kwargs.get("slug")
+
+        if category_id is not None:
+            category = get_object_or_404(Category, pk=category_id)
+        else:
+            category = get_object_or_404(Category, slug=category_slug)
+
+        products = get_products_by_category(category.pk)
+        return render(request, self.template_name, {
+            "category": category,
+            "products": products,
+        })

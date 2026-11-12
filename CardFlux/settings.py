@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env_path = BASE_DIR / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, encoding="utf-8-sig")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change-me-now")
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "users",
 ]
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 AUTHENTICATION_BACKENDS = ["users.backends.EmailBackend"]
@@ -98,3 +97,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
+
+# --- Redis: кеширование (Задание 1) ---
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+CACHE_TTL = int(os.getenv("CACHE_TTL", "60"))

@@ -60,3 +60,19 @@ class ProductForm(forms.ModelForm):
                 "Введите неотрицательное значение, например 0 или 199.99."
             )
         return price
+
+    def clean_image(self):
+        """Валидация загружаемого изображения: JPEG/PNG, не больше 5 МБ."""
+        image = self.cleaned_data.get("image")
+        if image:
+            if image.size > 5 * 1024 * 1024:
+                raise forms.ValidationError(
+                    "Размер файла не должен превышать 5 МБ."
+                )
+            allowed = ("image/jpeg", "image/png")
+            content_type = getattr(image, "content_type", "")
+            if content_type not in allowed:
+                raise forms.ValidationError(
+                    "Допустимы только изображения формата JPEG или PNG."
+                )
+        return image

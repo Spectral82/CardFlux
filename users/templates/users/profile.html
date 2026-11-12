@@ -1,0 +1,24 @@
+{% extends "catalog/base.html" %}
+
+{% block title %}Профиль — CardFlux{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Профиль</h2>
+
+<p><strong>Email:</strong> {{ user.email }} <small class="text-muted">(не изменяется)</small></p>
+
+<form method="post" enctype="multipart/form-data" class="col-lg-6">
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        <div class="text-danger">{{ field.errors }}</div>
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">На главную</a>
+</form>
+{% endblock %}
